@@ -37,6 +37,7 @@ def load_extended_mnist(train=True):
         images.append(image)
         labels.append(label)
 
+    # images = (np.array(images) / 255.0) + 0.01
     images = (np.array(images) / 255.0 * 0.99) + 0.01
     labels = np.array(labels)
 
@@ -51,12 +52,35 @@ def load_extended_mnist(train=True):
 train_data, train_labels = load_extended_mnist(train=True)
 test_data, test_labels = load_extended_mnist(train=False)
 
+
+# Shuffle the data
+# def shuffle_data(X, Y):
+#     permutation = np.random.permutation(X.shape[0])
+#     return X[permutation], Y[permutation]
+#
+# train_data, train_labels = shuffle_data(train_data, train_labels)
+
 # verified if one-hot-encoded (True)
 # print(train_labels[0])
-# print(test_labels[0])
-#
-# print('train_data', train_data.shape)
-# print('test_data', test_data.shape)
+# print(train_data[0])
+
+
+# Let's split the train dataset into train dataset (90%) + validation dataset (10%)
+def train_data_splitter(train_data, percentage):
+    train_length = train_data.shape[0]
+    validation_length = int((percentage/100) * train_length)
+    return train_data[:train_length - validation_length, :], train_data[train_length - validation_length:, :]
+
+
+train_data, validation_data = train_data_splitter(train_data, 10)
+print('train_data', train_data.shape)
+print('validation_data', validation_data.shape)
+print('test_data', test_data.shape)
+print('---'*4)
+train_labels, validation_labels = train_data_splitter(train_labels, 10)
+print('train_labels', train_labels.shape)
+print('validation_labels', validation_labels.shape)
+print('test_labels', test_labels.shape)
 
 
 def batches_generator(train_data, train_labels, batch_size):
@@ -85,20 +109,30 @@ def relu(x, backpropagation=False):
     return np.maximum(0, x)
 
 
-def softmax(x, backpropagation=False):
+def leaky_relu(x, alpha=0.01, backpropagation=False):
+    # x = np.clip(x, -500, 500)
+    if backpropagation:
+        dx = np.ones_like(x)
+        dx[x < 0] = alpha
+        return dx
+    return np.maximum(alpha * x, x)
+
+
+def softmax(x):
     # # Clip values to prevent overflow
     # x = np.clip(x, -500, 500)  # Clip x to avoid large values
-
-    exp = np.exp(x - np.max(x))
+    exp = np.exp(x - np.max(x, axis=0, keepdims=True))
     s = exp / np.sum(exp, axis=0, keepdims=True)
-    if backpropagation:
-        return s * (1 - s)
     return s
+
+
+# def get_learning_rate(initial_lr, iteration, decay_rate=0.1):
+#     return initial_lr / (1 + decay_rate * iteration)
 
 
 # The MLP architecture should consist of 784 input neurons, 100 hidden neurons, and 10 output neurons.
 class MLP:
-    def __init__(self, in_layer=784, h_layer=100, out_layer=10, lr=0.01, epochs=400, batches=150, dropout_rate=0):
+    def __init__(self, in_layer=784, h_layer=100, out_layer=10, lr=0.005, epochs=1000, batches=120, dropout_rate=0):
         self.in_layer = in_layer
         self.h_layer = h_layer
         self.out_layer = out_layer
@@ -116,7 +150,8 @@ class MLP:
         '''He initialization - for Variants of ReLU Activation Functions'''
         self.params_he = {
             'W1': np.random.randn(self.h_layer, self.in_layer) * np.sqrt(2 / self.in_layer),
-            'B1': np.zeros((h_layer, 1)),
+            # 'B1': np.zeros((h_layer, 1)),
+            'B1': np.full((h_layer, 1), 0.01),
             'W2': np.random.randn(self.out_layer, self.h_layer) * np.sqrt(2 / self.h_layer),
             'B2': np.zeros((out_layer, 1))
         }
@@ -132,7 +167,7 @@ class MLP:
         # print('W1:', params['W1'].shape)  # (100, 784)
         # print('A0:', params['A0'].shape)  # (784, batch_size)
         # print('B1:', params['B1'].shape)  # (100, 1)
-        params['A1'] = relu(params['Z1'])
+        params['A1'] = leaky_relu(params['Z1'])
         # print('A1', params['A1'].shape)  # (100, batch_size)
 
         if train:  ## Dropout
@@ -172,9 +207,9 @@ class MLP:
         # print('A1.T: ', params['A1'].T.shape)  # (batch_size, 100)
         # print('B2: ', params['B2'].shape)  # (10, 1)
 
-        err = np.dot(params['W2'].T, err) * relu(params['Z1'], backpropagation=True)
-        if 'dropout_mask' in params:
-            err = err * params['dropout_mask']
+        err = np.dot(params['W2'].T, err) * leaky_relu(params['Z1'], backpropagation=True)
+        # if 'dropout_mask' in params:
+        #     err = err * params['dropout_mask']
         # print('err: ', err.shape)  # (100, batch_size)
         params['W1'] -= self.lr * np.dot(err, params['A0'].T) / batch_size
         params['B1'] -= self.lr * np.mean(err, axis=1, keepdims=True)
@@ -186,22 +221,26 @@ class MLP:
         predictions = self.forward_prop(np.array(data), train=False)
         prediction_labels = np.argmax(predictions, axis=0)
         true_labels = np.argmax(labels, axis=1)
-        loss = -np.sum(labels * np.log(predictions.T + 1e-9)) / data.shape[0]
-        return np.mean(prediction_labels == true_labels), loss
 
-    def train(self, train_data, train_labels, test_data, test_labels):
+        acc = np.mean(prediction_labels == true_labels)
+        loss = -np.sum(labels * np.log(predictions.T + 1e-9)) / data.shape[0]
+
+        return acc, loss
+
+    def train(self):
         start_time = time.time()
         for epoch in range(self.epochs):
             for batch_idx, (data_batch, label_batch) in enumerate(
                     batches_generator(train_data, train_labels, self.batches)):
                 prediction = self.forward_prop(data_batch)
-
                 self.backward_prop(prediction, label_batch)
 
-            test_accuracy, loss = self.compute_acc_and_loss(test_data, test_labels)
+            train_accuracy, train_loss = self.compute_acc_and_loss(train_data, train_labels)
+            validation_accuracy, validation_loss = self.compute_acc_and_loss(validation_data, validation_labels)
             print(
                 f'Epoch: {epoch + 1}, Time Spent: {(time.time() - start_time):.2f}s,'
-                f' Test Accuracy: {(test_accuracy * 100):.2f}%, Loss: {loss:.2f}')
+                f' Train Accuracy: {(train_accuracy * 100):.2f}%, Train_Loss: {train_loss:.2f}'
+                f' Validation Accuracy: {(validation_accuracy * 100):.2f}%, Validation_Loss: {validation_loss:.2f}')
 
     def predict(self, X):
         output = self.forward_prop(X)
@@ -209,21 +248,20 @@ class MLP:
 
 
 if __name__ == '__main__':
-    # print(train_data[0], train_labels[0], test_data[0], test_labels[0])
     mlp = MLP()
-    mlp.train(train_data, train_labels, test_data, test_labels)
+    mlp.train()
 
-    # predictions = mlp.predict(test_data)
-    #
-    # # This is how you prepare a submission for the competition
-    # predictions_csv = {
-    #     "ID": [],
-    #     "target": [],
-    # }
-    #
-    # for i, label in enumerate(predictions):
-    #     predictions_csv["ID"].append(i)
-    #     predictions_csv["target"].append(label)
-    #
-    # df = pd.DataFrame(predictions_csv)
-    # df.to_csv("submission.csv", index=False)
+    predictions = mlp.predict(test_data)
+
+    # This is how you prepare a submission for the competition
+    predictions_csv = {
+        "ID": [],
+        "target": [],
+    }
+
+    for i, label in enumerate(predictions):
+        predictions_csv["ID"].append(i)
+        predictions_csv["target"].append(label)
+
+    df = pd.DataFrame(predictions_csv)
+    df.to_csv("submission.csv", index=False)
