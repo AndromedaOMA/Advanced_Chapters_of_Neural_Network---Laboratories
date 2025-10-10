@@ -244,7 +244,7 @@ class MLP:
 
     def predict(self, X):
         output = self.forward_prop(X)
-        return np.argmax(output, axis=1)
+        return np.argmax(output, axis=0)
 
 
 if __name__ == '__main__':
@@ -252,6 +252,7 @@ if __name__ == '__main__':
     mlp.train()
 
     predictions = mlp.predict(test_data)
+    # print(predictions.shape)
 
     # This is how you prepare a submission for the competition
     predictions_csv = {
