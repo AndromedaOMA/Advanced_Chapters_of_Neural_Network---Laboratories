@@ -14,9 +14,9 @@ class ExtendedMNISTDataset(Dataset):
         file = "extended_mnist_test.pkl"
         if train:
             file = "extended_mnist_train.pkl"
-        local_root = './data'
-        # file = os.path.join(root, file)
-        file = os.path.join(local_root, file)
+        # local_root = './data'
+        file = os.path.join(root, file)
+        # file = os.path.join(local_root, file)
         with open(file, "rb") as fp:
             self.data = pickle.load(fp)
 
@@ -51,14 +51,6 @@ def load_extended_mnist(train=True):
 
 train_data, train_labels = load_extended_mnist(train=True)
 test_data, test_labels = load_extended_mnist(train=False)
-
-
-# Shuffle the data
-# def shuffle_data(X, Y):
-#     permutation = np.random.permutation(X.shape[0])
-#     return X[permutation], Y[permutation]
-#
-# train_data, train_labels = shuffle_data(train_data, train_labels)
 
 # verified if one-hot-encoded (True)
 # print(train_labels[0])
@@ -132,7 +124,7 @@ def softmax(x):
 
 # The MLP architecture should consist of 784 input neurons, 100 hidden neurons, and 10 output neurons.
 class MLP:
-    def __init__(self, in_layer=784, h_layer=100, out_layer=10, lr=0.005, epochs=1000, batches=120, dropout_rate=0):
+    def __init__(self, in_layer=784, h_layer=100, out_layer=10, lr=0.005, epochs=2000, batches=250, dropout_rate=0):
         self.in_layer = in_layer
         self.h_layer = h_layer
         self.out_layer = out_layer
@@ -230,6 +222,8 @@ class MLP:
     def train(self):
         start_time = time.time()
         for epoch in range(self.epochs):
+            # Cosine Annealing
+            # self.lr = self.lr * (0.95 ** (epoch // 100))
             for batch_idx, (data_batch, label_batch) in enumerate(
                     batches_generator(train_data, train_labels, self.batches)):
                 prediction = self.forward_prop(data_batch)
