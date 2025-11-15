@@ -2,7 +2,7 @@ from Assignment_3.src.data_pipeline.preprocessing.preprocessing import preproces
 from Assignment_3.src.training.utils.load_config import load_config
 
 if __name__ == '__main__':
-    config = load_config("../experiments/experiment1/config.yml")
+    config = load_config("../../experiments/experiment1/config.yml")
 
     print(f'Running the {config['experiment']['name']} experiment')
     device = config['experiment']['device']

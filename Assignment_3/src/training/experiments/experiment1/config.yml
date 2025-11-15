@@ -1,5 +1,5 @@
 experiment:
-  name: "ResNet50 -- CIFAR10"
+  name: "ResNet50 -- CIFAR100"
   seed: 42
   device: "cuda"
 
@@ -7,7 +7,7 @@ dataset:
   name: "CIFAR100"       # Options: MNIST, CIFAR10, CIFAR100, OxfordIIITPet
   batch_size: 64
   num_workers: 4
-  data_dir: "../../../data/raw/CIFAR100"
+  data_dir: "../../../../data/CIFAR100"
 
 model:
   name: "ResNet50"       # Options: MLP, ResNet18, ResNet50

@@ -1,7 +1,10 @@
 project_name/
 │
 ├── data/                          # All data-related directories and files
-│   └── raw/                       # Original, immutable data dump
+│   ├── MNIST/                     # Original, immutable data dump
+│   ├── CIFAR10/                   # Original, immutable data dump
+│   ├── CIFAR100/                  # Original, immutable data dump
+│   └── OxfordIIITPet/             # Original, immutable data dump
 │
 ├── docs/                          # Project documentation
 │   ├── design_docs                # Design documents, architectural choices
