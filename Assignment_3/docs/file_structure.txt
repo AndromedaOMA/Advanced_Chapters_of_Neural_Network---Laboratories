@@ -1,22 +1,18 @@
 project_name/
 │
 ├── data/                          # All data-related directories and files
-│   ├── raw/                       # Original, immutable data dump
-│   ├── processed/                 # Data transformed for modeling, such as TFRecords or HDF5
-│   └── interim/                   # Temporary processed datasets, possibly smaller or for prototyping
+│   └── raw/                       # Original, immutable data dump
 │
 ├── docs/                          # Project documentation
-│   ├── design_docs/               # Design documents, architectural choices
-│   ├── tutorials/                 # Step-by-step guides and tutorials
+│   ├── design_docs                # Design documents, architectural choices
+│   ├── tutorials                  # Step-by-step guides and tutorials
 │   ├── requirements.txt           # Python package requirements file
-│   └── diagrams/                  # Network architecture diagrams, flowcharts
+│   └── file_structure.txt         # Project files structure
 │
 ├── src/                           # Source code
 │   ├── data_pipeline/             # All modules related to the data pipeline
 │   │   └── preprocessing/         # Data preprocessing modules
-│   │       ├── transformers/      # Transformation scripts (e.g., normalization, tokenization)
-│   │       ├── splitters/         # Scripts to split datasets into train/test/validation sets
-│   │       └── augmentations/     # Image data augmentation (e.g., rotations, flips)
+│   │       └── preprocessing.py   # Data preprocessing module
 │   │
 │   ├── models/                    # Neural network models and components
 │   │   ├── architectures/         # Different neural network architectures
@@ -26,14 +22,12 @@ project_name/
 │       ├── experiments/           # Specific experiment settings and results
 │       │   ├── experiment1/       # Each experiment can have its own subdirectory
 │       │   │   ├── config.yml     # Configuration file for the experiment
-│       │   │   ├── logs/          # Training logs for this experiment
 │       │   │   └── results/       # Resulting plots, performance metrics, etc.
 │       │   ├── experiment2/
 │       │   └── ...
 │       │
 │       ├── scripts/               # Actual scripts to run training
-│       │   ├── train_model.py     # Main training script
-│       │   └── validate_model.py  # Validation script
+│       │   └── train_model.py     # Main training script
 │       │
 │       ├── callbacks/             # Custom callbacks used during training
 │       │   ├── lr_schedulers/     # Learning rate scheduling callbacks
@@ -48,6 +42,7 @@ project_name/
 │       └── utils/                 # Miscellaneous utilities for training
 │           ├── gradient_clipping.py # Gradient clipping utilities
 │           ├── weight_initialization.py # Weight initialization strategies
+│           ├── load_config.py     # Config loader
 │           └── mixed_precision.py # Mixed precision training utilities
 │
 ├── results/                       # Final results and outputs

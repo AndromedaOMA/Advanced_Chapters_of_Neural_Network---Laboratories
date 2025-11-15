@@ -1,0 +1,30 @@
+experiment:
+  name: "ResNet50 -- CIFAR10"
+  seed: 42
+  device: "cuda"
+
+dataset:
+  name: "CIFAR100"       # Options: MNIST, CIFAR10, CIFAR100, OxfordIIITPet
+  batch_size: 64
+  num_workers: 4
+  data_dir: "../../../data/raw/CIFAR100"
+
+model:
+  name: "ResNet50"       # Options: MLP, ResNet18, ResNet50
+  input_dim: 784         # Used only for MLP
+  hidden_dim: 256
+  num_classes: 100
+
+training:
+  epochs: 30
+  learning_rate: 0.001
+  optimizer: "adam"
+  weight_decay: 1e-4
+  scheduler: "step_lr"
+  step_size: 10
+  gamma: 0.1
+
+logging:
+  save_dir: "./runs"
+  log_interval: 100
+  checkpoint: true
