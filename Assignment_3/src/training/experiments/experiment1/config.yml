@@ -2,12 +2,16 @@ experiment:
   name: "ResNet50 -- CIFAR100"
   seed: 42
   device: "cuda"
+  date_format: '%A_%d_%B_%Y_%Hh_%Mm_%Ss'
+  time_now: datetime.now().utctime(DATE_FORMAT)
 
 dataset:
   name: "CIFAR100"       # Options: MNIST, CIFAR10, CIFAR100, OxfordIIITPet
   batch_size: 64
   num_workers: 4
   data_dir: "../../../../data/CIFAR100"
+  mean: (0.5070751592371323, 0.48654887331495095, 0.4409178433670343)
+  std: (0.2673342858792401, 0.2564384629170883, 0.27615047132568404)
 
 model:
   name: "ResNet50"       # Options: MLP, ResNet18, ResNet50
@@ -16,15 +20,25 @@ model:
   num_classes: 100
 
 training:
-  epochs: 30
+  epochs: 200
+  milestones: [60, 120, 160]
   learning_rate: 0.001
-  optimizer: "adam"
-  weight_decay: 1e-4
-  scheduler: "step_lr"
+  optimizer: "SGD"  # SGD, Adam, AdamW, Muon, SAM
+  momentum: 0.9
+  weight_decay: 5e-4
+  scheduler: "stepLR"  # stepLR, ReduceLROnPlateau
   step_size: 10
   gamma: 0.1
+  mode: "min"
+  verbose: True
+  factor: 0.3
+  patience: 3
+  threshold: 0.09
+  loss_function: "CrossEntropyLoss"  #
+  resume: False
 
 logging:
-  save_dir: "./runs"
+  checkpoint_path: "./checkpoints"
   log_interval: 100
   checkpoint: true
+  save_epoch: 10
