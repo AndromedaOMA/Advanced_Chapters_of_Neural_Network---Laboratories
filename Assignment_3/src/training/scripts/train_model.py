@@ -1,5 +1,4 @@
 import os
-import sys
 from tqdm import tqdm
 import torch
 from torch.utils.tensorboard import SummaryWriter
@@ -19,7 +18,7 @@ scaler = get_mixed_precision()
 
 def train(epoch):
     model.train()
-    running_loss = 0.0
+    train_loss = 0.0
 
     for batch_index, (train_images, train_labels) in enumerate(tqdm(train_loader, desc=f"Epoch {epoch}")):
         train_images, train_labels = train_images.to(device), train_labels.to(device)
@@ -42,15 +41,18 @@ def train(epoch):
             if param.grad is not None:
                 writer.add_scalar(f"LastLayerGradients/{name}", param.grad.norm(), n_iter)
 
-        running_loss += loss.item()
+        train_loss += loss.item()
 
-    scheduler.step()
+    if config['training']['scheduler'] == 'stepLR':
+        scheduler.step()
+    else:
+        scheduler.step(train_loss)
 
     # Log parameter histograms per epoch
     for name, param in model.named_parameters():
         writer.add_histogram(name.replace('.', '/'), param, epoch)
 
-    return running_loss / len(train_loader)
+    return train_loss / len(train_loader)
 
 
 @torch.no_grad()
