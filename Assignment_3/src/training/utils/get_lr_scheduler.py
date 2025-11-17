@@ -5,12 +5,12 @@ import torch
 def get_lr_scheduler(configs, optimizer):
     name = configs["training"]["scheduler"].lower()
     if name == 'steplr':
-        print('Learning Rate Scheduler loaded!')
+        print('StepLR Learning Rate Scheduler loaded!')
         return torch.optim.lr_scheduler.StepLR(optimizer,
                                                step_size=configs["training"]["step_size"],
                                                gamma=configs["training"]["gamma"])
     elif name == 'reducelronplateau':
-        print('Learning Rate Scheduler loaded!')
+        print('ReduceLROnPlateau Learning Rate Scheduler loaded!')
         return torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer,
                                                           mode=configs["training"]["mode"],
                                                           factor=configs["training"]["factor"],

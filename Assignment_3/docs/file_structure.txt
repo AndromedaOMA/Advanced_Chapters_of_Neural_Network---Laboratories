@@ -7,7 +7,6 @@ project_name/
 │   └── OxfordIIITPet/             # Original, immutable data dump
 │
 ├── docs/                          # Project documentation
-│   ├── design_docs                # Design documents, architectural choices
 │   ├── tutorials                  # Step-by-step guides and tutorials
 │   ├── requirements.txt           # Python package requirements file
 │   └── file_structure.txt         # Project files structure
@@ -32,20 +31,13 @@ project_name/
 │       ├── scripts/               # Actual scripts to run training
 │       │   └── train_model.py     # Main training script
 │       │
-│       ├── callbacks/             # Custom callbacks used during training
-│       │   ├── lr_schedulers/     # Learning rate scheduling callbacks
-│       │   ├── early_stopping.py  # Early stopping callback
-│       │   ├── model_checkpointing.py # Save model checkpoints during training
-│       │   └── tensorboard_logging.py # Log metrics and other details to TensorBoard
-│       │
-│       ├── metrics/               # Metrics to evaluate model during training
-│       │   ├── accuracy.py        # Accuracy metric
-│       │   └── f1_score.py        # F1 Score
-│       │
 │       └── utils/                 # Miscellaneous utilities for training
-│           ├── gradient_clipping.py # Gradient clipping utilities
 │           ├── weight_initialization.py # Weight initialization strategies
 │           ├── load_config.py     # Config loader
+│           ├── get_loss_function.py # Loss Function Getter
+│           ├── get_lr_scheduler.py # Learning Rate Scheduler Getter
+│           ├── get_model.py       # Model Getter
+│           ├── get_optimizer.py   # Optimizer Getter
 │           └── mixed_precision.py # Mixed precision training utilities
 │
 ├── results/                       # Final results and outputs
