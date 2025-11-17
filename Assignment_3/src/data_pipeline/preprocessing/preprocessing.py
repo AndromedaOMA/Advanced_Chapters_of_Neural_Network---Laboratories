@@ -5,6 +5,9 @@ from torch.utils.data import DataLoader
 
 def preprocessing(config):
     if config['dataset']['name'] == 'MNIST':
+        mean = list(map(float, config["dataset"]["mean"]))
+        std = list(map(float, config["dataset"]["std"]))
+
         train_transformer = transforms.Compose([
             transforms.RandomAffine(degrees=2, translate=[0.1, 0.1]),
             transforms.ToTensor(),
@@ -21,6 +24,22 @@ def preprocessing(config):
         return train_loader, test_loader
 
     elif config['dataset']['name'] == 'CIFAR10':
+        mean = list(map(float, config["dataset"]["mean"]))
+        std = list(map(float, config["dataset"]["std"]))
+
+        train_transformer = transforms.Compose([
+            # transforms.ToPILImage(),
+            transforms.RandomCrop(32, padding=4),
+            transforms.RandomHorizontalFlip(),
+            transforms.RandomRotation(15),
+            transforms.ToTensor(),
+            transforms.Normalize(mean, std)
+        ])
+        test_transformer = transforms.Compose([
+            transforms.ToTensor(),
+            transforms.Normalize(mean, std)
+        ])
+
         train_dataset = datasets.CIFAR10(root=f'{config["dataset"]["data_dir"]}/train', train=True, transform=train_transformer, download=True)
         test_dataset = datasets.CIFAR10(root=f'{config["dataset"]["data_dir"]}/test', train=False, transform=test_transformer, download=True)
         train_loader = DataLoader(train_dataset, batch_size=config['dataset']['batch_size'], shuffle=True, pin_memory=True)
@@ -28,17 +47,20 @@ def preprocessing(config):
         return train_loader, test_loader
 
     elif config['dataset']['name'] == 'CIFAR100':
+        mean = list(map(float, config["dataset"]["mean"]))
+        std = list(map(float, config["dataset"]["std"]))
+
         train_transformer = transforms.Compose([
             # transforms.ToPILImage(),
             transforms.RandomCrop(32, padding=4),
             transforms.RandomHorizontalFlip(),
             transforms.RandomRotation(15),
             transforms.ToTensor(),
-            transforms.Normalize(config['dataset']['mean'], config['dataset']['std'])
+            transforms.Normalize(mean, std)
         ])
         test_transformer = transforms.Compose([
             transforms.ToTensor(),
-            transforms.Normalize(config['dataset']['mean'], config['dataset']['std'])
+            transforms.Normalize(mean, std)
         ])
 
         train_dataset = datasets.CIFAR100(root=f'{config["dataset"]["data_dir"]}/train', train=True, transform=train_transformer, download=True)
