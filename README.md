@@ -131,7 +131,7 @@ Assignment_3/
 | 77.64 | 367 | 128 | SGD | 0.245117 | 0.926565 |
 | 77.35 | 341 | 128 | SGD | 0.108086 | 0.968217 |
 
-The four hyperparameters that were varied (changed/used) during the sweep are:
+The four hyperparameters that were varied during the sweep are (as you can see above):
 
 1. Batch Size
 
@@ -148,22 +148,23 @@ The four hyperparameters that were varied (changed/used) during the sweep are:
 1. Clone the current repositoy! Now you have the project avalable on your local server!</br>
  Type command: ```git clone git@github.com:AndromedaOMA/Neural_Networks---Laboratories.git```
 2. Select, open and run the chosen project through PyCharm IDE or the preferred IDE.
-3. Have fun!
+3. Set the Anaconda environment using ```Assignment_3/docs/environment.yaml``` requirements/configuration file.
+4. Have fun!
 
 ---
 
 <h3 id="htr" align="left">How to run:</h3>
 
-1. Clone the current repositoy! Now you have the project avalable on your local server!</br>
- Type command: ```git clone git@github.com:AndromedaOMA/Neural_Networks---Laboratories.git```
-2. Select, open and run the chosen project through PyCharm IDE or the preferred IDE.
-3. Have fun!
+1. Go to ```Assignment_3/src/training/experiments``` and choose one experiment sub directory.
+2. Each experiment sub directory contains a ```config.yml``` file. Here you can change easly the hyperparameters and the dataset you want to train the model you want.
+3. Running the ```Assignment_3/src/training/scripts/train_model.py``` script will call a hyperparameter sweep based on your modiffied config.yml file.
 
 ---
 
 - ⚡ Fun fact: **tba!**
 
 * [Table Of Content](#table-of-content)
+
 
 
 
