@@ -104,9 +104,9 @@ Assignment_3/
 
 ---
 
-<h3 id="score" align="left">Best score:</h3>
+<h3 id="WB-chart" align="left">W&B Chart:</h3>
 
-<img src="https://github.com/user-attachments/assets/1b53b7f2-bc87-4ee5-ae97-14bdf6a11f06" alt="Moments before the disaster" style="width: 300px; height: auto;">
+<img width="5662" height="2974" alt="W B Chart 11_23_2025, 11_17_10 PM" src="https://github.com/user-attachments/assets/a0dd52cf-667b-4d43-8f0e-33c45e4556df" />
 
 ---
 
@@ -131,6 +131,7 @@ Assignment_3/
 - ⚡ Fun fact: **tba!**
 
 * [Table Of Content](#table-of-content)
+
 
 
 
