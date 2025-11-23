@@ -1,1 +1,2 @@
-/data
+/data/CIFAR100
+/src/training/scripts/wandb

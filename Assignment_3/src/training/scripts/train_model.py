@@ -4,6 +4,11 @@ import torch
 from torch.utils.tensorboard import SummaryWriter
 from datetime import datetime
 
+import pprint
+import wandb
+
+wandb.login()
+
 from Assignment_3.src.data_pipeline.preprocessing.preprocessing import preprocessing
 from Assignment_3.src.training.utils.get_loss_function import get_loss_function
 from Assignment_3.src.training.utils.get_lr_scheduler import get_lr_scheduler
@@ -12,21 +17,25 @@ from Assignment_3.src.training.utils.get_optimizer import get_optimizer
 from Assignment_3.src.training.utils.load_config import load_config
 from Assignment_3.src.training.utils.mixed_precision import get_mixed_precision
 
-
 scaler = get_mixed_precision()
 
 
-def train(epoch):
+def train_per_epoch(epoch):
+    global model, optimizer, loss_function, scheduler, writer, train_loader
+
     model.train()
     train_loss = 0.0
 
-    for batch_index, (train_images, train_labels) in enumerate(tqdm(train_loader, desc=f"Epoch {epoch}")):
+    for batch_index, (train_images, train_labels) in enumerate(
+        tqdm(train_loader, desc=f"Epoch {epoch}")
+    ):
         train_images, train_labels = train_images.to(device), train_labels.to(device)
 
         optimizer.zero_grad()
-        with torch.amp.autocast(device_type=device):  # mixed precision
+        with torch.amp.autocast(device_type='cuda'):
             outputs = model(train_images)
             loss = loss_function(outputs, train_labels)
+
         scaler.scale(loss).backward()
         torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)
         scaler.step(optimizer)
@@ -35,92 +44,97 @@ def train(epoch):
         n_iter = (epoch - 1) * len(train_loader) + batch_index + 1
         writer.add_scalar("Train/Loss", loss.item(), n_iter)
 
-        # Log gradients of the last layer
-        last_layer = list(model.children())[-1]
-        for name, param in last_layer.named_parameters():
-            if param.grad is not None:
-                writer.add_scalar(f"LastLayerGradients/{name}", param.grad.norm(), n_iter)
+        # W&B
+        wandb.log({"train_loss": loss.item()})
 
         train_loss += loss.item()
 
-    if config['training']['scheduler'] == 'stepLR':
-        scheduler.step()
-    else:
-        scheduler.step(train_loss)
-
-    # Log parameter histograms per epoch
-    for name, param in model.named_parameters():
-        writer.add_histogram(name.replace('.', '/'), param, epoch)
+    scheduler.step()
 
     return train_loss / len(train_loader)
 
 
 @torch.no_grad()
 def eval_training(epoch=0):
-    model.eval()
-    test_loss = 0.0  # cost function error
-    correct = 0.0
+    global model, loss_function, test_loader, writer
 
-    for (test_images, test_labels) in test_loader:
+    model.eval()
+    test_loss = 0.0
+    correct = 0
+
+    for test_images, test_labels in test_loader:
         test_images, test_labels = test_images.to(device), test_labels.to(device)
 
         outputs = model(test_images)
         test_loss += loss_function(outputs, test_labels).item()
 
-        prediction = outputs.argmax(dim=1)
-        correct += (prediction == test_labels).sum().item()
+        correct += (outputs.argmax(1) == test_labels).sum().item()
 
     avg_loss = test_loss / len(test_loader)
     accuracy = 100.0 * correct / len(test_loader.dataset)
 
-    print(f"Epoch {epoch}: Test Loss: {avg_loss:.3f}, Accuracy: {accuracy:.3f}%")
+    print(f"Epoch {epoch}: Test Loss {avg_loss:.3f}, Accuracy {accuracy:.3f}%")
 
-    if writer:
-        writer.add_scalar("Test/Loss", avg_loss, epoch)
-        writer.add_scalar("Test/Accuracy", accuracy, epoch)
+    writer.add_scalar("Test/Loss", avg_loss, epoch)
+    writer.add_scalar("Test/Accuracy", accuracy, epoch)
+
+    wandb.log({"val_loss": avg_loss, "val_acc": accuracy})
 
     return accuracy
+
+
+def sweep_train():
+    global model, train_loader, test_loader, writer, loss_function, optimizer, scheduler, device
+
+    run = wandb.init(project="ACNN-asgn3")
+    config_wb = wandb.config
+
+    device = config['experiment']['device']
+
+    experiment_number = config['experiment']['number']
+
+    # override with sweep hyperparameters
+    config['training']['learning_rate'] = config_wb.learning_rate
+    config['training']['weight_decay'] = config_wb.weight_decay
+    config['dataset']['batch_size'] = config_wb.batch_size
+    config['training']['optimizer'] = config_wb.optimizer
+
+    train_loader, test_loader = preprocessing(config)
+    model = get_model(config['model']['name'], config).to(device)
+    loss_function = get_loss_function(config["training"]["loss_function"])
+    optimizer = get_optimizer(config, model.parameters())
+    scheduler = get_lr_scheduler(config, optimizer)
+
+    log_dir = f'../experiments/experiment{experiment_number}/results'
+    os.makedirs(log_dir, exist_ok=True)
+
+    writer = SummaryWriter(
+        os.path.join(log_dir, datetime.now().strftime(config["experiment"]["date_format"]))
+    )
+
+    best_acc = 0
+    for epoch in range(1, config['training']['epochs'] + 1):
+        train_per_epoch(epoch)
+        acc = eval_training(epoch)
+
+        if acc > best_acc:
+            best_acc = acc
+            checkpoint_dir = f'../experiments/experiment{experiment_number}/checkpoints'
+            os.makedirs(checkpoint_dir, exist_ok=True)
+            torch.save(model.state_dict(), os.path.join(
+                checkpoint_dir, f'best_model_{best_acc}.pth'
+            ))
+
+    writer.close()
+    run.finish()
 
 
 if __name__ == '__main__':
     print("Type the number of the experiment you want to run:")
     experiment_number = int(input())
     config = load_config(f"../experiments/experiment{experiment_number}/config.yml")
-    print(f'Running the experiment{experiment_number}')
 
-    device = config['experiment']['device']
-    print(f'Running on {device} device')
+    pprint.pprint(f"Sweep configuration: {config['sweep']}")
 
-    train_loader, test_loader = preprocessing(config)
-
-    model = get_model(config['model']['name'], config).to(device)
-    loss_function = get_loss_function(config["training"]["loss_function"])
-    optimizer = get_optimizer(config, model.parameters())
-    scheduler = get_lr_scheduler(config, optimizer)
-    # Batch size scheduler
-
-    log_dir = f'../experiments/experiment{config["experiment"]["number"]}/results'
-    if not os.path.exists(log_dir):
-        os.mkdir(log_dir)
-
-    writer = SummaryWriter(
-        log_dir=os.path.join(
-            log_dir, datetime.now().strftime(config["experiment"]["date_format"])
-        )
-    )
-
-    sample_images, _ = next(iter(train_loader))
-    writer.add_graph(model, sample_images[:1].to(device))
-
-    best_acc = 0.0
-    for epoch in range(1, config['training']['epochs'] + 1):
-        train_loss = train(epoch)
-        acc = eval_training(epoch)
-
-        if acc > best_acc:
-            best_acc = acc
-            checkpoint_dir = f'../experiments/experiment{config["experiment"]["number"]}/checkpoints'
-            os.makedirs(checkpoint_dir, exist_ok=True)
-            torch.save(model.state_dict(), os.path.join(checkpoint_dir, f'best_model_{best_acc}_acc.pth'))
-
-    writer.close()
+    sweep_id = wandb.sweep(config['sweep'], project="ACNN-asgn3")
+    wandb.agent(sweep_id, function=sweep_train, count=7)
