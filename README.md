@@ -22,8 +22,7 @@ a short report with the experimental results. The report can be Markdown or PDF 
 2. You can configure classification training on the following datasets: MNIST, CIFAR-10, CIFAR-100, and OxfordIIITPet.
 3. Datasets are efficient and support data augmentation.
 4. Can use any of the following models: resnet18, resnet50, resnest14d, resnest26d, and MLP. Use timm or huggingface to load the models.
-5. Can be configured to use any of the following optimizers: SGD, Adam,
-AdamW, Muon, SAM.
+5. Can be configured to use any of the following optimizers: SGD, Adam, AdamW, Muon, SAM.
 6. Can be configured to use one of the following learning rate schedulers: StepLR and ReduceLROnPlateau.
 7. Integrates a batch size scheduler.
 8. Is integrated with Tensorboard and/or wandb for metrics reporting. Must report relevant training and testing metrics. Supports an early stopping mechanism.
@@ -165,6 +164,7 @@ The four hyperparameters that were varied (changed/used) during the sweep are:
 - ⚡ Fun fact: **tba!**
 
 * [Table Of Content](#table-of-content)
+
 
 
 
