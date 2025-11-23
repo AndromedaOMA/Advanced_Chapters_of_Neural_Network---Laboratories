@@ -55,48 +55,90 @@ The pipeline is based on a reusable and reconfigurable training module. Each exp
 Below you will find a structure of the project files which also provides additional explanations:
 
 Assignment_3/
+
 │
+
 ├── data/                          # All data-related directories and files
+
 │   ├── MNIST/                     # Original, immutable data dump
+
 │   ├── CIFAR10/                   # Original, immutable data dump
+
 │   ├── CIFAR100/                  # Original, immutable data dump
+
 │   └── OxfordIIITPet/             # Original, immutable data dump
+
 │
+
 ├── docs/                          # Project documentation
+
 │   ├── environment.yaml           # Anaconda environment required to setup
+
 │   ├── requirements.txt           # Python package requirements file
+
 │   └── file_structure.txt         # Project files structure
+
 │
+
 ├── src/                           # Source code
+
 │   ├── data_pipeline/             # All modules related to the data pipeline
+
 │   │   └── preprocessing/         # Data preprocessing modules
+
 │   │       └── preprocessing.py   # Data preprocessing module
+
 │   │
+
 │   ├── models/                    # Neural network models and components
+
 │   │   ├── architectures/         # Different neural network architectures
+
 │   │   └── layers/                # Custom layers
 │   │
+
 │   └── training/
+
 │       ├── experiments/           # Specific experiment settings and results
+
 │       │   ├── experiment1/       # Each experiment can have its own subdirectory
+
 │       │   │   ├── config.yml     # Configuration file for the experiment
+
 │       │   │   └── results/       # Resulting logs via tensorboard
+
 │       │   ├── experiment2/
+
 │       │   └── ...
+
 │       │
+
 │       ├── scripts/               # Actual scripts to run training
+
 │       │   ├── wandb              # Wandb logs
+
 │       │   └── train_model.py     # Main training script
+
 │       │
+
 │       └── utils/                 # Miscellaneous utilities for training
+
 │           ├── weight_initialization.py # Weight initialization strategies
+
 │           ├── load_config.py     # Config loader
+
 │           ├── get_loss_function.py # Loss Function Getter
+
 │           ├── get_lr_scheduler.py # Learning Rate Scheduler Getter
+
 │           ├── get_model.py       # Model Getter
+
 │           ├── get_optimizer.py   # Optimizer Getter
+
 │           └── mixed_precision.py # Mixed precision training utilities
+
 │
+
 └── README.md                      # Overview and instructions for the project
   
 ---
@@ -128,4 +170,5 @@ Assignment_3/
 - ⚡ Fun fact: **tba!**
 
 * [Table Of Content](#table-of-content)
+
 
