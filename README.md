@@ -105,12 +105,28 @@ Assignment_3/
 
 <h3 id="WB-chart" align="left">W&B Chart:</h3>
 
-<img width="5662" height="2974" alt="W B Chart 11_23_2025, 11_17_10 PM" src="https://github.com/user-attachments/assets/a0dd52cf-667b-4d43-8f0e-33c45e4556df" />
-<div style="display:flex; gap:10px;">
-  <img src="https://github.com/user-attachments/assets/01be89a5-2a3f-46af-8765-54a0f52f0723" width="250"/>
-  <img src="https://github.com/user-attachments/assets/f40867f9-eafa-4d04-a88e-83699a52d090" width="250"/>
-  <img src="https://github.com/user-attachments/assets/ad8c0fee-27d7-46c1-96ba-5909b403eae2" width="250"/>
+<!-- Main large chart -->
+<div style="margin-bottom:15px;">
+  <img 
+    src="https://github.com/user-attachments/assets/a0dd52cf-667b-4d43-8f0e-33c45e4556df"
+    width="80%"
+    style="border-radius:10px; box-shadow:0 0 8px rgba(0,0,0,0.25);"
+  />
 </div>
+
+<!-- Three small charts (left-aligned) -->
+<div style="display:flex; gap:20px; justify-content:flex-start;">
+  <img src="https://github.com/user-attachments/assets/01be89a5-2a3f-46af-8765-54a0f52f0723"
+       width="250"
+       style="border-radius:10px; box-shadow:0 0 8px rgba(0,0,0,0.25);" />
+  <img src="https://github.com/user-attachments/assets/f40867f9-eafa-4d04-a88e-83699a52d090"
+       width="250"
+       style="border-radius:10px; box-shadow:0 0 8px rgba(0,0,0,0.25);" />
+  <img src="https://github.com/user-attachments/assets/ad8c0fee-27d7-46c1-96ba-5909b403eae2"
+       width="250"
+       style="border-radius:10px; box-shadow:0 0 8px rgba(0,0,0,0.25);" />
+</div>
+
 
 <h3 id="table" align="left">Table of hyperparameters:</h3>
 
@@ -169,6 +185,7 @@ The four hyperparameters that were varied during the sweep are (as you can see a
 - ⚡ Fun fact: **tba!**
 
 * [Table Of Content](#table-of-content)
+
 
 
 
