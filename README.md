@@ -43,8 +43,9 @@ a short report with the experimental results. The report can be Markdown or PDF 
 
 • You must mention that the Jax configuration is faster. Caching will not be considered, you have to do several other steps to achieve this.
 
+• The training pipeline is efficient (training time or RAM usage or VRAM usage).
 
-<h3 align="left">How does it work?</h3>
+• You motivate why in the report and include measurements.
 
   
 <h3 align="left">The logic behind the code:</h3>
@@ -164,6 +165,20 @@ The four hyperparameters that were varied during the sweep are (as you can see a
 
 ---
 
+<h3 align="left">How does is this pipeline efficient?</h3>
+
+```scaler = get_mixed_precision()``` typically returns a mixed-precision gradient scaler, usually a wrapper around torch.cuda.amp.GradScaler (in PyTorch) or an equivalent object in other frameworks.
+
+Purpose:
+
+1. Enables mixed-precision training (FP16 + FP32) to **speed up training** on GPUs with Tensor Cores.
+
+2. Prevents numerical underflow by scaling the loss before backpropagation.
+
+3. Works with autocast() to automate mixed-precision operations.
+
+---
+
 <h3 id="setup" align="left">Setup:</h3>
 
 1. Clone the current repositoy! Now you have the project avalable on your local server!</br>
@@ -185,6 +200,7 @@ The four hyperparameters that were varied during the sweep are (as you can see a
 - ⚡ Fun fact: **tba!**
 
 * [Table Of Content](#table-of-content)
+
 
 
 
