@@ -108,6 +108,8 @@ Assignment_3/
 
 <img width="5662" height="2974" alt="W B Chart 11_23_2025, 11_17_10 PM" src="https://github.com/user-attachments/assets/a0dd52cf-667b-4d43-8f0e-33c45e4556df" />
 
+<h3 id="table" align="left">Table of hyperparameters:</h3>
+
 | val_acc | Runtime | batch | optim | train_loss | val_loss |
 |--------:|--------:|-------:|:------|-----------:|----------:|
 | 76.47 | 350 | 128 | AdamW | 0.17224 | 1.05642 |
@@ -122,15 +124,23 @@ Assignment_3/
 | 79.02 | 1136 | 64 | AdamW | 0.247853 | 0.975867 |
 | 76.47 | 1074 | 128 | SGD | 1.01373 | 1.2991 |
 | 78.35 | 1426 | 32 | AdamW | 0.144093 | 1.01578 |
-| 74.7 | 1386 | 32 | Adam | 0.441646 | 0.967284 |
 | 78.5 | 1143 | 64 | Adam | 0.342168 | 0.961861 |
 | 78.52 | 1116 | 128 | Adam | 0.0861193 | 0.965395 |
-| 54.92 | 502 | 32 | AdamW | 2.02022 | 1.66717 |
 | 71.64 | 470 | 32 | AdamW | 1.41954 | 1.1866 |
 | 76.72 | 185 | 64 | SGD | 0.329836 | 0.989844 |
 | 75.76 | 362 | 64 | SGD | 2.01752 | 1.85608 |
 | 77.64 | 367 | 128 | SGD | 0.245117 | 0.926565 |
 | 77.35 | 341 | 128 | SGD | 0.108086 | 0.968217 |
+
+The four hyperparameters that were varied (changed/used) during the sweep are:
+
+1. Batch Size
+
+2. Learning Rate
+
+3. Optimizer (SGD, Adam, AdamW)
+
+4. Weight Decay (for Adam/AdamW)
 
 ---
 
@@ -155,6 +165,7 @@ Assignment_3/
 - ⚡ Fun fact: **tba!**
 
 * [Table Of Content](#table-of-content)
+
 
 
 
